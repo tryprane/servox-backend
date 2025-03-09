@@ -1,0 +1,66 @@
+# #!/bin/sh
+# # Servox VPS MOTD (Message of the Day)
+
+# # Colors
+# BLUE='\033[0;34m'
+# GREEN='\033[0;32m'
+# BOLD='\033[1m'
+# RESET='\033[0m'
+
+# # System info
+# HOSTNAME=$(hostname)
+# KERNEL=$(uname -r)
+# CPU_MODEL=$(grep 'model name' /proc/cpuinfo | head -1 | cut -d':' -f2 | sed 's/^ *//')
+# MEMORY=$(free -h | awk '/^Mem:/ {print $2}')
+# DISK=$(df -h / | awk 'NR==2 {print $2}')
+
+# # Logo
+# cat << EOF
+
+# ${BLUE}███████ ███████ ██████  ██    ██  ██████  ██   ██ 
+# ██      ██      ██   ██ ██    ██ ██    ██  ██ ██  
+# ███████ █████   ██████  ██    ██ ██    ██   ███   
+#      ██ ██      ██   ██  ██  ██  ██    ██  ██ ██  
+# ███████ ███████ ██   ██   ████    ██████  ██   ██ ${RESET}
+                        
+# ${BOLD}Welcome to your Servox VPS${RESET}
+
+# Host Information:
+# - Hostname: ${HOSTNAME}
+# - Kernel:   ${KERNEL}
+# - CPU:      ${CPU_MODEL}
+# - Memory:   ${MEMORY}
+# - Disk:     ${DISK}
+
+# ${GREEN}Need help? Contact us at support@servox.store${RESET}
+
+# EOF
+
+#!/bin/bash
+# Servox VPS MOTD (Message of the Day)
+
+# System info
+HOSTNAME=$(hostname)
+KERNEL=$(uname -r)
+CPU_MODEL=$(grep 'model name' /proc/cpuinfo | head -1 | cut -d':' -f2 | sed 's/^ *//')
+MEMORY=$(free -h | awk '/^Mem:/ {print $2}')
+DISK=$(df -h / | awk 'NR==2 {print $2}')
+
+# Logo with directly embedded color codes
+echo -e "\033[0;34m███████ ███████ ██████  ██    ██  ██████  ██   ██ 
+██      ██      ██   ██ ██    ██ ██    ██  ██ ██  
+███████ █████   ██████  ██    ██ ██    ██   ███   
+     ██ ██      ██   ██  ██  ██  ██    ██  ██ ██  
+███████ ███████ ██   ██   ████    ██████  ██   ██ \033[0m
+                        
+\033[1mWelcome to your Servox VPS\033[0m
+
+Host Information:
+- Hostname: ${HOSTNAME}
+- Kernel:   ${KERNEL}
+- CPU:      ${CPU_MODEL}
+- Memory:   ${MEMORY}
+- Disk:     ${DISK}
+
+\033[0;32mNeed help? Contact us at support@servox.store\033[0m
+"

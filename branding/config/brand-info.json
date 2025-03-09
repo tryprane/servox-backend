@@ -1,0 +1,12 @@
+{
+    "company": {
+      "name": "Servox",
+      "tagline": "High-Performance VPS Solutions",
+      "founded": "2023",
+      "website": "https://servox.store"
+    },
+    "contact": {
+      "support": "support@servox.store",
+      "sales": "sales@servox.store"
+    }
+  }

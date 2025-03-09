@@ -1,0 +1,14 @@
+# Servox Brand Colors
+
+Primary Blue: #0056b3
+Secondary Gray: #555555
+Accent Blue: #00d8ff
+Light Gray: #f1f5f9
+Dark Gray: #1e293b
+
+# Usage Guidelines
+- Primary Blue: Main brand color, use for primary buttons, headers, and key elements
+- Secondary Gray: Use for text, secondary elements, and borders
+- Accent Blue: Use sparingly for highlights and call-to-action elements
+- Light Gray: Background color for light themes
+- Dark Gray: Background color for dark themes or footers
