@@ -1009,3 +1009,5 @@
 {"level":"info","message":"Updated metrics for instance VPS-M7KSMP44","timestamp":"2025-03-08T15:57:17.284Z"}
 {"level":"info","message":"Redis Connected Succesfully","timestamp":"2025-03-09T04:30:23.649Z"}
 {"level":"info","message":"MONGO DB connected : cluster0-shard-00-00.wf3up.mongodb.net","timestamp":"2025-03-09T04:30:24.314Z"}
+{"level":"info","message":"Redis Connected Succesfully","timestamp":"2025-03-10T05:58:57.870Z"}
+{"level":"info","message":"MONGO DB connected : cluster0-shard-00-00.wf3up.mongodb.net","timestamp":"2025-03-10T05:58:58.535Z"}
