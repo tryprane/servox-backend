@@ -7,9 +7,11 @@ export class VPSOrderService{
 
     static async createOrder(data:{
         userId: string;
+        name: string;
         planName: string;
         configuration: IVPSOrder['configuration'];
         billingCycle?: 'monthly' | 'annually';
+        adminPassword: string;
     }):Promise<IVPSOrder> {
 
         try {
@@ -19,7 +21,7 @@ export class VPSOrderService{
                 throw new Error('Invalid Plan Selected');
             }
             const amount=  this.fetchAmount(plan , data.billingCycle as string);
-
+            
             const orderData: Partial<IVPSOrder> = {
                 userId: data.userId,
                 plan: {
@@ -31,6 +33,11 @@ export class VPSOrderService{
                 configuration: data.configuration,
                 billingCycle: data.billingCycle || 'monthly',
                 amount: amount,
+                deployment: {
+                    hostname: data.name,
+                    adminPassword: data.adminPassword
+                },
+                
                 status:'pending'
             }
 
@@ -52,7 +59,7 @@ export class VPSOrderService{
     static fetchAmount(plan: IVPSPlan , billingCycle: any): number {
 
         const price = billingCycle === 'monthly' ? plan.price.monthly : plan.price.annually;
-        const amount = price * 1.18; 
+        const amount = price; 
 
         return amount
     }

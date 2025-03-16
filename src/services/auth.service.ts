@@ -15,14 +15,12 @@ interface admin {
 }
 
 export class AuthService {
-    private static generateToken (userId: string):string{
+    static generateToken (userId: string):string{
 
         const JWT_SECRET = process.env.JWT_SECRET;
         
         if (!JWT_SECRET) {
             console.log('Chud Gaye');
-        }else{
-            console.log(JWT_SECRET)
         }
         return jwt.sign(
             { id: userId },
@@ -60,6 +58,9 @@ export class AuthService {
         );
     
         return {user, token};
+    }
+    static async processReferral(userId: string, referralCode: string): Promise<void> {
+        await ReferralService.processNewUserReferral(userId, referralCode);
     }
 
     static async adminRegister (adminData:admin): Promise<{admin: IUser; token: string}>{

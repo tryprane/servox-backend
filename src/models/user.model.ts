@@ -18,6 +18,7 @@ export interface IUser extends Document {
     firstName: string;
     lastName: string;
     referralCode: string;
+    googleId?: string;
     referredBy?:Schema.Types.ObjectId;
     referralCount: number;
     referralEarning: IReferralEarning[];
@@ -64,6 +65,12 @@ const userSchema = new Schema({
         unique: true,
         
     },
+    googleId: {
+        type: String,
+        sparse: true,
+        unique: true
+    },
+
     referredBy: {
         type: Schema.Types.ObjectId,
         ref: 'User',

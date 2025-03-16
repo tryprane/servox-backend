@@ -36,14 +36,16 @@ export class OverviewService {
                 .sort({ timestamp: -1 });
     
             // Format recent orders
-            const recentOrders = orders.map(order => ({
-                id: order.orderId,
-                instanceName: order.deployment?.hostname || 'Unnamed Instance',
-                plan: order.plan.name,
-                status: order.status,
-                // Now createdAt should be properly typed
-                createdAt: order.createdAt
-            }));
+            const recentOrders = orders
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()) // Sort by creation date descending
+    .slice(0, 4) // Take only the first 4 orders
+    .map(order => ({
+        id: order.orderId,
+        instanceName: order.deployment?.hostname || 'Unnamed Instance',
+        plan: order.plan.name,
+        status: order.status,
+        createdAt: order.createdAt
+    }));
     
             return {
                 totalInstances,

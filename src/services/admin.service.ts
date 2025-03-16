@@ -7,9 +7,9 @@ export class adminService {
     static async updateDeploymentDetails(
         orderId: string,
         details: {
-            hostname?:string,
-            ipAddress?:string,
-            adminPassword?: string
+           
+            ipAddress?:string
+          
         }
     ): Promise<IVPSOrder | null> {
 

@@ -2,7 +2,12 @@ import { Request , Response  } from "express";
 import { VpsService } from "../services/vps.service";
 import {logger} from "../utils/logger"
 
+interface UserWithId {
+    id: string;
+    role:string;
+    [key: string]: any;
 
+  }
 
 export class VPSController {
     static async getVPSPlans(req: Request , res: Response): Promise<void>{
@@ -32,7 +37,7 @@ export class VPSController {
 
         try {
 
-            if(req.user!.role !== 'admin'){
+            if((req.user! as UserWithId).role !== 'admin'){
                 res.status(403).json({
                        status: 'error',
                        message:'Access Denied'

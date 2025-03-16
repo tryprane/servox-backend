@@ -3,13 +3,20 @@ import { VPSInstanceService } from '../services/instance.service';
 import { catchAsync } from '../utils/catchAsync';
 import { AppError } from '../utils/appError';
 
+interface UserWithId {
+  id: string;
+  role:string;
+  [key: string]: any;
+
+}
+
 export class VPSInstanceController {
   static getInstances = catchAsync(async (req: Request, res: Response) => {
-    if (!req.user?.id) {
+    if (!(req.user! as UserWithId).id) {
       throw new AppError('User not authenticated', 401);
     }
     
-    const instances = await VPSInstanceService.getUserInstances(req.user.id);
+    const instances = await VPSInstanceService.getUserInstances((req.user! as UserWithId).id);
     res.json(instances);
   });
 

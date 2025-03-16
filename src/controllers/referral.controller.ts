@@ -1,6 +1,12 @@
 import { Request, Response } from "express";
 import { ReferralService } from "../services/referral.service";
 import { catchAsync } from "../utils/catchAsync";
+interface UserWithId {
+    id: string;
+    role:string;
+    [key: string]: any;
+
+  }
 
 
 export class ReferralController{
@@ -19,7 +25,7 @@ export class ReferralController{
     static getRefferralStats = catchAsync(async (req: Request , res: Response) => {
 
         try{
-            const stats = await ReferralService.getReferralStats(req.user!.id);
+            const stats = await ReferralService.getReferralStats((req.user! as UserWithId).id);
 
             res.status(200).json({
 

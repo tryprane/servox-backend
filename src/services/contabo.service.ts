@@ -11,6 +11,7 @@ interface CustomizationOptions {
   userId?: string;
 }
 
+
 export class ContaboVPSService {
   static async performVPSAction(instanceId: string, action: 'start' | 'stop' | 'restart'): Promise<void> {
     try {
@@ -281,10 +282,10 @@ static async getVPSUsage(instanceId: string): Promise<{
             // Run the customization script with detailed output capture
             logger.info('Running customization script...');
             const result = await ssh.execCommand('cd /tmp/servox-setup && bash -x ./customize.sh', {
-              // Add a small timeout to ensure script execution completes
+              // Use type assertion to override TypeScript's type checking
               execOptions: {
                 timeout: 180000 // 3 minutes timeout for the customization script
-              },
+              } as any,
               onStdout: (chunk) => {
                 logger.info(`Customization output: ${chunk.toString('utf8').trim()}`);
               },
@@ -292,7 +293,6 @@ static async getVPSUsage(instanceId: string): Promise<{
                 logger.warn(`Customization error: ${chunk.toString('utf8').trim()}`);
               }
             });
-            
             // Even with warnings, we can consider it successful if there are no major errors
             // The tar warnings are just informational and don't affect functionality
             if (result.code !== 0) {

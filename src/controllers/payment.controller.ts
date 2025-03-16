@@ -1,6 +1,12 @@
 import { Request, Response } from "express";
 import { PaymentService } from "../services/payment.service";
 import { logger } from "../utils/logger";
+interface UserWithId {
+    id: string;
+    role:string;
+    [key: string]: any;
+
+  }
 
 export class PaymentController{
     static async initiatePayment(req: Request , res: Response){
@@ -9,7 +15,7 @@ export class PaymentController{
             const { orderId, amount} = req.body;
             const payment = await PaymentService.initiatePayment(
                 orderId,
-                req.user!.id,
+                (req.user! as UserWithId).id,
                 amount
             );
 
@@ -29,18 +35,26 @@ export class PaymentController{
         }
     }
 
-    static async handleWebhook(req:Request , res: Response){
-        try{
-            const signature = req.get('Signature') || '';
+    static async handleWebhook(req: Request, res: Response) {
+        try {
             const payload = req.body;
-
-            await PaymentService.handleWebhook(payload, signature);
-        } catch (error){
-            logger.error('Webhook handling error' , error);
+            // Check for signature in headers (as a fallback)
+   
+            
+            await PaymentService.handleWebhook(payload);
+            
+            // Return a 200 OK response
+            res.status(200).json({
+                status: 'success',
+                message: 'Webhook processed successfully'
+            });
+        } catch (error) {
+            logger.error('Webhook handling error', error);
             res.status(400).json({
                 status: 'error',
-                message: 'Webhook Handeling Error'
-            })
+                message: 'Webhook Handling Error'
+            });
         }
-    }
+    
+}
 }

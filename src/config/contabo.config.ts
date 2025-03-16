@@ -1,6 +1,8 @@
 import axios, { AxiosInstance } from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 
+
+
 export class ContaboAPI {
     private static BASE_URL = 'https://api.contabo.com/v1';
     private static cachedClient: AxiosInstance | null = null;

@@ -6,5 +6,5 @@ const vpsRouter = Router();
 
 vpsRouter.post('/create', protect, VPSOrderController.createOrder);
 vpsRouter.get('/fetch', protect, VPSOrderController.getUserOrders);
-
+vpsRouter.get('/fetch/:orderId', protect, VPSOrderController.getUserOrderById);
 export default vpsRouter;

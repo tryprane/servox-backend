@@ -50,9 +50,9 @@ export interface IVPSOrder extends Document {
   updateDeploymentDetails(
     this: IVPSOrder, 
     details: { 
-        hostname?: string, 
-        ipAddress?: string, 
-        adminPassword?: string 
+        
+        ipAddress?: string
+       
     }
 ): void;
 }
@@ -117,10 +117,10 @@ const vpsOrderSchema = new Schema ({
                 type: String,
                 required: true,
                 enum: [
-                    'Ubuntu',
-                    'CentOS',
+                    'ubuntu24',
+                    'ubuntu22',
                     'Debian',
-                    'Windows Server',
+                    'ubuntu20',
                     'AlmaLinux'
                 ]
             },
@@ -134,7 +134,7 @@ const vpsOrderSchema = new Schema ({
         dataCenter: {
             type: String,
             enum: [
-                'US-East',
+                'European',
                 'US-West',
                 'EU-Central',
                 'EU-West',
@@ -155,7 +155,6 @@ const vpsOrderSchema = new Schema ({
     deployment: {
         hostname: {
             type: String,
-            unique: true,
             sparse: true
         },
         ipAddress: {

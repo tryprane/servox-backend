@@ -2,11 +2,20 @@ import { adminService } from "../services/admin.service";
 import { Request, Response } from "express";
 import { logger } from "../utils/logger";
 
+interface UserWithId {
+    id: string;
+    role:string;
+    [key: string]: any;
+
+  }
+
 export class adminController {
+
+    
 
     static async updateDeploymentDetails(req: Request, res: Response){
         try{
-            if(req.user!.role !== 'admin'){
+            if((req.user! as UserWithId).role !== 'admin'){
              res.status(403).json({
                     status: 'error',
                     message:'Access Denied'
@@ -17,9 +26,9 @@ export class adminController {
             const order = await adminService.updateDeploymentDetails(
                 req.params.orderId,
                 {
-                    hostname: req.body.hostname,
-                    ipAddress: req.body.ipAddress,
-                    adminPassword: req.body.adminPassword
+                    
+                    ipAddress: req.body.ipAddress
+                    
                 }
             );
             res.status(200).json({
@@ -38,7 +47,7 @@ export class adminController {
     static async getPaidOrders(req: Request , res: Response){
         try {
 
-            if(req.user!.role !== 'admin'){
+            if((req.user! as UserWithId).role !== 'admin'){
                  res.status(403).json({
                     status: 'error',
                     message:'Access Denied'
@@ -65,7 +74,7 @@ export class adminController {
     static async getCreatedOrders(req: Request , res: Response){
         try {
 
-            if(req.user!.role !== 'admin'){
+            if((req.user! as UserWithId).role !== 'admin'){
                  res.status(403).json({
                     status: 'error',
                     message:'Access Denied'
@@ -91,7 +100,7 @@ export class adminController {
     static async getDeployedOrders(req: Request , res: Response){
         try {
 
-            if(req.user!.role !== 'admin'){
+            if((req.user! as UserWithId).role !== 'admin'){
                  res.status(403).json({
                     status: 'error',
                     message:'Access Denied'
