@@ -4,8 +4,10 @@ import { ContaboVPSService } from './contabo.service';
 import { VPSOrder, IVPSOrder } from '../models/vps-order.model';
 import { InstanceMetrics } from '../models/instance-metrics.model';
 import { logger } from '../utils/logger';
+import { InstanceId } from '../models/instanceId.model';
 // import { SSHMetricsService } from './ssh.service';
 import { SSHMetricsService } from './ssh/ssh-metrics-service';
+import instanceRouter from '../routes/instance.routes';
 // import { SSHMetricsService } from './ssh/ssh-metrics-service';
 
 // Track in-progress metrics fetches to prevent duplicate requests
@@ -256,7 +258,18 @@ export class VPSInstanceService {
     action: 'start' | 'stop' | 'restart'
   ): Promise<boolean> {
     try {
-      await ContaboVPSService.performVPSAction(instanceId, action);
+
+      const instance = await InstanceId.findOne({instanceId: instanceId})
+
+      if (!instance){
+   throw new Error;
+     
+      }
+       const contabo = instance.contaboId;
+     
+
+
+      await ContaboVPSService.performVPSAction(contabo, action);
       
       // Determine the new status based on the action
       let newStatus: 'running' | 'stopped' | 'error';

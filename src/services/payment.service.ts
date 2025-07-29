@@ -2,6 +2,19 @@ import { VPSOrder } from "../models/vps-order.model";
 import { Payment, IPayment } from "../models/payment.model";
 import { CryptoClient } from "../config/cryptomus.config";
 import { logger } from "../utils/logger";
+import axios from "axios";
+
+const PUSHOVER_USER_KEY = 'u5ob32jvrjfoqzqqmvev2v27ehkf3j'; // You'll get this from Pushover
+const PUSHOVER_API_TOKEN = 'abte56yuhdcnq2s7e6ds1neuakeqy7';
+
+interface PushoverNotificationParams {
+    title: string;
+    message: string;
+    priority?: number;
+    sound?: string;
+    retry?: number;
+    expire?: number;
+}// You'll get this from Pushover
 
 export class PaymentService{
 
@@ -71,7 +84,7 @@ export class PaymentService{
     static async handleWebhook(payload: any) {
         try {
             // Verify webhook signature
-            if (!this.cryptoClient.verifyWebhook( payload)) {
+            if (!this.cryptoClient.verifyWebhook(payload)) {
                 throw new Error('Invalid webhook signature');
             }
 
@@ -90,25 +103,96 @@ export class PaymentService{
                 case 'paid':
                     payment.status = 'completed';
                     await this.completeOrder(payment.orderId);
+                    
+                    // Send Pushover notification for successful payment
+                    await this.sendPushoverNotification({
+                        title: 'Payment Received!',
+                        message: `Order ${order_id} paid: ${amount}`,
+                        priority: 1,
+                        sound: 'cashregister', // This will make an alarm sound
+                    });
                     break;
+                    
                 case 'cancel':
                     payment.status = 'cancelled';
+                    
+                    // Notification for cancelled payment
+                    await this.sendPushoverNotification({
+                        title: 'Payment Cancelled',
+                        message: `Order ${order_id} was cancelled`,
+                        priority: 0,
+                        sound: 'classical',
+                    });
                     break;
+                    
                 case 'expired':
                     payment.status = 'failed';
+                    
+                    // Notification for expired payment
+                    await this.sendPushoverNotification({
+                        title: 'Payment Expired',
+                        message: `Order ${order_id} expired`,
+                        priority: 0,
+                        sound: 'falling',
+                    });
                     break;
+                    
                 default:
                     logger.warn(`Unhandled payment status: ${status}`);
+                    
+                    // Notification for unhandled status
+                    await this.sendPushoverNotification({
+                        title: 'Payment Status Update',
+                        message: `Order ${order_id} status: ${status}`,
+                        priority: -1,
+                    });
             }
-
+    
             await payment.save();
             return payment;
         } catch (error) {
             logger.error('Webhook handling error:', error);
+            
+            // Send error notification
+            await this.sendPushoverNotification({
+                title: 'Webhook Error',
+                message: `Error processing webhook`,
+                priority: 2, // Emergency priority
+                sound: 'siren', // Loud alarm sound
+                retry: 30, // Retry every 30 seconds
+                expire: 3600, // Keep trying for 1 hour
+            });
+            
             throw error;
         }
     }
-
+    
+    // Helper method to send Pushover notifications
+    static async sendPushoverNotification(params: PushoverNotificationParams) {
+        try {
+            const notificationData: any = {
+                token: PUSHOVER_API_TOKEN,
+                user: PUSHOVER_USER_KEY,
+                title: params.title,
+                message: params.message,
+                priority: params.priority || 0,
+                sound: params.sound || 'pushover'
+            };
+            
+            // Add retry and expire parameters for emergency priority
+            if (params.priority === 2) {
+                notificationData.retry = params.retry || 30;
+                notificationData.expire = params.expire || 3600;
+            }
+            
+            const response = await axios.post('https://api.pushover.net/1/messages.json', notificationData);
+            logger.info(`Pushover notification sent: ${params.title}`);
+            return response.data;
+        } catch (error) {
+            logger.error('Failed to send Pushover notification:', error);
+            return null;
+        }
+    }
     private static async completeOrder(orderId: string) {
         const order = await VPSOrder.findOne({ orderId });
         if (order) {

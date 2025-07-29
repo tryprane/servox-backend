@@ -13,6 +13,8 @@ instanceRouter.get('/instances', VPSInstanceController.getInstances);
 // Get specific instance details
 instanceRouter.get('/instances/:id', VPSInstanceController.getInstance);
 
+instanceRouter.post('/instances/create', VPSInstanceController.createVPSInstance);
+
 // Update instance status (start/stop/restart)
 instanceRouter.post('/instances/:id/:action', VPSInstanceController.updateInstanceStatus);
 

@@ -6,7 +6,7 @@ import { logger } from "../utils/logger";
 import { Schema } from "mongoose";
 
 export class ReferralService{
-    private static COMMISSION_RATE = 0.10;
+    private static COMMISSION_RATE = 0.05;
 
 
     static async validateReferralCode(referralCode: string): Promise<IUser>{
@@ -54,29 +54,38 @@ export class ReferralService{
 
         const user = await User.findById(userId).populate('referredBy');
         if (!user || !user.referredBy) return;
+        try {
+            // Find the referrer
+            const referrer = await User.findById(user.referredBy);
+            if (!referrer) {
+                throw new AppError('Referrer not found', 400);
+            }
 
-        const commissionAmount = this.calculateCommission(purchaseAmount);
-
-        const transaction = await ReferralTransaction.create({
-            referrer: user.referredBy,
-            referred: user._id,
-            purchaseAmount,
-            commissionAmount,
-            status: 'pending'
-        })
-
-
-        try{
-            await User.findByIdAndUpdate(user.referredBy, {
-                $push:{
-                    referralEarning:{
-                        amount: commissionAmount,
-                        fromUser: user._id,
-                        purchaseAmount
-                    }
-                },
-                inc: {totalReferralEarning: commissionAmount}
+            // Calculate commission amount
+            const commissionAmount = this.calculateCommission(purchaseAmount);
+            
+            // Create a pending transaction
+            const transaction = await ReferralTransaction.create({
+                referrer: referrer._id,
+                referred: user._id,
+                purchaseAmount,
+                commissionAmount,
+                status: 'pending'
             });
+
+            // Add to referral earnings directly using push method with proper type casting
+            referrer.referralEarnings.push({
+                amount: commissionAmount,
+                fromUser: user._id as Schema.Types.ObjectId, // Add type casting here
+                purchaseAmount,
+                earnedAt: new Date()
+                
+                // earnedAt will use default Date.now()
+            });
+            
+            // Save the updated user - the pre-save hook will automatically update totalReferralEarnings
+            await referrer.save();
+
 
             transaction.status = 'completed';
             transaction.processedAt = new Date();
@@ -86,8 +95,7 @@ export class ReferralService{
 
            
         } catch(error) {
-               transaction.status = 'failed';
-               await transaction.save();
+            
                
                logger.error('Failed to process referral commission:' , error);
                throw new AppError('Failed to process referral commsion ' , 500)
@@ -109,17 +117,19 @@ export class ReferralService{
         const referrals = await User.find({referredBy: userId})
         .select('name email createdAt')
         .sort({ createdAt: -1 });
-
+        
         const transaction = await ReferralTransaction.find({
             referrer: userId,
             status: 'completed'
         }).sort({crearedAt: -1});
 
+        // console.log("transaction" , user.totalReferralEarnins)
+
         return {
             referraCode : user.referralCode,
             referralCoun: user.referralCount,
-            totalEarning: user.totalReferralEarning,
-            availableCommission:user.totalReferralEarning,
+            totalEarning: user.totalReferralEarnings,
+            availableCommission:user.totalReferralEarnings,
 
             referral: referrals.map(r => ({
 

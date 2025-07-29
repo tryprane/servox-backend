@@ -21,8 +21,8 @@ export interface IUser extends Document {
     googleId?: string;
     referredBy?:Schema.Types.ObjectId;
     referralCount: number;
-    referralEarning: IReferralEarning[];
-    totalReferralEarning: number;
+    referralEarnings: IReferralEarning[];
+    totalReferralEarnings: number;
     role: 'user' | 'admin';
     isActive: boolean;
     createdAt: Date;

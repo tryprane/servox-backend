@@ -59,4 +59,15 @@ export class VpsService {
             throw error;
         }
     }
+
+    static async deletePlan(id: string): Promise<boolean> {
+        try {
+            const plan = await VPSPlan.findByIdAndDelete(id);
+            await redisClient.del('vpsPlans');
+            return true;
+        } catch (error) {
+            console.error('Error deleting VPS plan:', error);
+            throw error;
+        }
+    }
 }

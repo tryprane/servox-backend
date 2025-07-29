@@ -1,3 +1,5 @@
+import { error } from "winston";
+import { IUser, User } from "../models/user.model";
 import { VPSOrder , IVPSOrder } from "../models/vps-order.model";
 import { ContaboVPSService } from "./contabo.service";
 import { ReferralService } from "./referral.service";
@@ -67,6 +69,33 @@ export class adminService {
         }                
 
         return  ordersPaid;               
+    }
+
+    static async getAllUser():Promise<IUser[] | null>{
+        try {
+            const user = await User.find();
+            if(!user) {
+                throw new Error('User Not Found');
+            }
+            return user;
+        } catch (error) {
+            throw new Error('Error fetching users');
+        }
+    }
+
+    static async deletUser(userId:string):Promise<boolean>{
+
+        try {
+            const user = await User.findByIdAndDelete(userId);
+            if(!user) {
+                throw new Error('User Not Found');
+                
+            }   
+
+        return true            
+        } catch (error) {
+            return false;
+        }
     }
 
     static async recentlyCreated(): Promise<IVPSOrder[] | null> {

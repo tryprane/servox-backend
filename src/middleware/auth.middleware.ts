@@ -22,7 +22,7 @@ try {
         }
 
     const token = req.headers.authorization?.replace('Bearer ' , '');
-    console.log(token);
+    
     if(!token){
         res.status(401).json({message: 'Please authenticate'});
         return;
