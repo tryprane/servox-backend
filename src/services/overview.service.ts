@@ -2,6 +2,7 @@ import { VPSOrder } from '../models/vps-order.model';
 import { InstanceMetrics } from '../models/instance-metrics.model';
 import { ContaboVPSService } from './contabo.service';
 import { logger } from '../utils/logger';
+import mongoose from 'mongoose';
 
 export class OverviewService {
     static async getDashboardStats(userId: string) {
@@ -27,9 +28,11 @@ export class OverviewService {
     
             // Calculate total spent
             const totalSpent = await VPSOrder.aggregate([
-                { $match: { userId, status: 'deployed' } },
+                { $match: { userId: new mongoose.Types.ObjectId(userId), status: 'deployed' } },
                 { $group: { _id: null, total: { $sum: '$amount' } } }
             ]);
+
+            
     
             // Get latest resource usage for active instances
             const resourceUsage = await InstanceMetrics.findOne({ userId })

@@ -258,7 +258,7 @@ export class AuthController {
             role: user.role,
             referralCode: user.referralCode,
             referralCount: user.referralCount,
-            totalReferralEarning: user.totalReferralEarning,
+            totalReferralEarning: user.totalReferralEarnings,
             isActive: user.isActive,
             createdAt: user.createdAt
         });

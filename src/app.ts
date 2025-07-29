@@ -22,12 +22,13 @@ import instanceRouter from './routes/instance.routes';
 import resetRouter from "./routes/reset.routes";
 import { terminalRoutes } from "./routes/terminal.routes";
 import { configurePassport } from "./middleware/passport.middleware"; // Import passport configuration
+import { buffer } from "stream/consumers";
 
 // Configure dotenv
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
 const app = express();
-const PORT = 3000;
+const PORT = 5000;
 
 // Configure Express
 configureExpress(app);

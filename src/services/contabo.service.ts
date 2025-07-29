@@ -16,7 +16,7 @@ export class ContaboVPSService {
   static async performVPSAction(instanceId: string, action: 'start' | 'stop' | 'restart'): Promise<void> {
     try {
         const client = await ContaboAPI.getAuthenticatedClient();
-        await client.post(`/compute/instances/202491017/actions/${action}`, {}, {
+        await client.post(`/compute/instances/${instanceId}/actions/${action}`, {}, {
             headers: {
                 'x-request-id': ContaboAPI.generateRequestId()
             }
@@ -57,6 +57,59 @@ static async getVPSUsage(instanceId: string): Promise<{
         throw new Error('Unable to retrieve VPS details');
     }
 }
+
+static async createVPSInstance(options: {
+  displayName?: string;
+  productId: string;
+  imageId?: string;
+  region?: string;
+  period?: number;
+  sshKeys?: number[];
+  rootPassword?: number;
+  userData?: string;
+  defaultUser?: 'root' | 'admin' | 'administrator';
+  license?: string;
+  addOns?: Record<string, any>;
+  applicationId?: string;
+}): Promise<{ instanceId: string }> {
+  try {
+    const client = await ContaboAPI.getAuthenticatedClient();
+    
+    // Prepare request payload with defaults as per documentation
+    const payload = {
+      imageId: options.imageId || "afecbb85-e2fc-46f0-9684-b46b1faf00bb", // Default: Ubuntu 22.04
+      productId: options.productId, // Required field based on product IDs from documentation
+      region: options.region || "EU", // Default: EU
+      period: options.period || 1, // Default: 1 month
+      displayName: options.displayName,
+      defaultUser: options.defaultUser || "admin", // Default: admin
+      sshKeys: options.sshKeys || [],
+      rootPassword: options.rootPassword,
+      userData: options.userData || "",
+      license: options.license,
+      addOns: options.addOns,
+      applicationId: options.applicationId
+    };
+    
+    // Create a new instance with the specified parameters
+    const response = await client.post('/compute/instances', payload, {
+      headers: {
+        'x-request-id': ContaboAPI.generateRequestId()
+      }
+    });
+    
+    // Extract the instance ID from the response
+    const instanceId = response.data.data[0].instanceId;
+    
+    logger.info(`Successfully created VPS instance ${instanceId}`);
+    
+    return { instanceId };
+  } catch (error) {
+    logger.error('Failed to create VPS instance:', error);
+    throw new Error('Unable to create VPS instance');
+  }
+}
+
 
       
       // Helper function to wait for SSH to be available

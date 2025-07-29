@@ -94,7 +94,7 @@ export class CryptoClient {
         delete payloadWithoutSign.sign;
         
         // Convert to JSON string with pretty printing (2 space indentation)
-        const jsonBody = JSON.stringify(payloadWithoutSign, null, 2);
+        const jsonBody = JSON.stringify(payloadWithoutSign);
         
         // Encode as base64
         const base64Body = Buffer.from(jsonBody).toString('base64');

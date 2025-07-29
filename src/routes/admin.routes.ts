@@ -12,5 +12,7 @@ adminRouter.patch('/orders/:orderId/deployment', protect, adminController.update
 adminRouter.get('/orders/paid', protect, adminController.getPaidOrders);
 adminRouter.get('/orders/created', protect, adminController.getCreatedOrders);
 adminRouter.get('/orders/deployed', protect, adminController.getDeployedOrders);
-
+adminRouter.delete('/delete/:userId', protect, adminController.deleteUser);
+adminRouter.get('/users/all', protect, adminController.getAllUser);
+adminRouter.get('/orders/:userId', protect, adminController.fetchUsersOrders);
 export default adminRouter;

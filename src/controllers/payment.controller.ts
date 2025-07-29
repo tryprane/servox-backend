@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { PaymentService } from "../services/payment.service";
 import { logger } from "../utils/logger";
+import { JsonWebTokenError } from "jsonwebtoken";
 interface UserWithId {
     id: string;
     role:string;
@@ -38,6 +39,9 @@ export class PaymentController{
     static async handleWebhook(req: Request, res: Response) {
         try {
             const payload = req.body;
+
+            // const test = req.rawBody;
+            
             // Check for signature in headers (as a fallback)
    
             

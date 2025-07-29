@@ -33,6 +33,30 @@ export class VPSController {
         }
     }
 
+    static async deletePlan(req: Request , res: Response): Promise<void>{
+        try {
+            if((req.user! as UserWithId).role !== 'admin'){
+                res.status(403).json({
+                       status: 'error',
+                       message:'Access Denied'
+                   });   
+                   return 
+               }
+               const {id} = req.params;
+               const plan = await VpsService.deletePlan(id);
+               res.status(200).json({
+                status: 'success',
+                data: plan
+               })
+        } catch (error) {
+            logger.error('Deleting Error' , error);
+            res.status(400).json({
+                status: 'error',
+                message: error instanceof Error ? error.message : 'Deleting Failed'
+            })
+        }
+    }
+
     static async postVpsPlan (req: Request , res : Response) : Promise<void> {
 
         try {
@@ -47,7 +71,7 @@ export class VPSController {
             const plan = await VpsService.postPlan(req.body);
             res.status(200).json({
                 status: 'success',
-                data: {plan}
+                data: plan
             })
         } catch (error) {
 
