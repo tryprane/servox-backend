@@ -14,10 +14,10 @@ export { SSHMetricsService } from './ssh-metrics-service';
 // };
 
 // Shutdown function for application termination
-export const shutdownSSHServices = (): Promise<void> => {
-  return new Promise<void>((resolve) => {
-    // Shutdown the SSH services (this calls connection pool shutdown internally)
-    SSHTerminalService.shutdown();
-    resolve();
-  });
-};
+// export const shutdownSSHServices = (): Promise<void> => {
+//   return new Promise<void>((resolve) => {
+//     // Shutdown the SSH services (this calls connection pool shutdown internally)
+//     SSHTerminalService.shutdown();
+//     resolve();
+//   });
+// };
