@@ -1,0 +1,46 @@
+name: BUILD THE V1
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  DOCKER_IMAGE: docker.io/${{ secrets.DOCKER_USERNAME }}/servox-v1
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 2. Log in to Docker Hub
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      # 3. Build Docker image with both SHA and latest tags
+      - name: Build Docker image
+        run: |
+          docker build -t $DOCKER_IMAGE:${{ github.sha }} -t $DOCKER_IMAGE:latest .
+
+      # 4. Push Docker images
+      - name: Push Docker image
+        run: |
+          docker push $DOCKER_IMAGE:${{ github.sha }}
+          docker push $DOCKER_IMAGE:latest
+
+      # 5. Deploy on VPS
+      - name: Deploy on VPS
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_KEY }}
+          script: |
+            cd /home/servox
+            kubectl apply -f deployment.yaml
+            kubectl rollout restart deployment/multi-node-app
+            kubectl rollout status deployment/multi-node-app
