@@ -28,7 +28,7 @@ import { buffer } from "stream/consumers";
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
 const app = express();
-const PORT = 5000;
+const PORT = 3000;
 
 // Configure Express
 configureExpress(app);
